@@ -50,7 +50,6 @@ void radfetComHandler ::dataIn_handler(FwIndexType portNum, Fw::Buffer& buffer, 
     const U8* data = buffer.getData();
     U32 dataSize = static_cast<U32>(buffer.getSize());
 
-
     if (!accumulateSensorData(data, dataSize)){
         processSensorData();
         clearDataBuffer();
@@ -58,9 +57,9 @@ void radfetComHandler ::dataIn_handler(FwIndexType portNum, Fw::Buffer& buffer, 
     }
 
     processSensorData();
-    
+
     this->bufferReturn_out(0, buffer);
-    
+
 }
 
 void radfetComHandler::schedIn_handler(FwIndexType portNum, U32 context){
@@ -72,7 +71,7 @@ void radfetComHandler::schedIn_handler(FwIndexType portNum, U32 context){
 void radfetComHandler::START_READINGS_cmdHandler(FwOpcodeType opCode, U32 cmdSeq, U32 interval){
     m_periodicReadings = true;
     m_readingInterval = interval;
-    
+
     //TODO OPEN FILE
     sendSensorCommand("START");
     this->log_ACTIVITY_HI_ReadingStarted(interval);
@@ -111,7 +110,6 @@ void radfetComHandler::DOWNLINK_REQUEST_cmdHandler(FwOpcodeType opCode, U32 cmdS
 
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
 }
-
 
 void radfetComHandler::processSensorData(){
     while(m_dataBufferSize >= RESPONSE_SIZE){
@@ -184,7 +182,6 @@ bool radfetComHandler::parseDownlinkPacket(const U8* data, U32 size) {
     return true;
 }
 
-
 bool radfetComHandler::parseRadiationData(const U8* data, U32 size, U32& rawCounts){
     if (size < RESPONSE_SIZE){
         return false;
@@ -193,9 +190,9 @@ bool radfetComHandler::parseRadiationData(const U8* data, U32 size, U32& rawCoun
     if(data[0] != RESPONSE_START_MARKER){
         return false;
     }
-        
-   // U8 moduleNum = data[1];  // Module 1 or 2
-   // U8 radfetNum = data[2];  // RADFET 1 or 2
+
+    // U8 moduleNum = data[1];  // Module 1 or 2
+    // U8 radfetNum = data[2];  // RADFET 1 or 2
 
     rawCounts = (static_cast<U32>(data[3]) << 8) | static_cast<U32>(data[4]);
 
@@ -227,7 +224,6 @@ void radfetComHandler::clearDataBuffer(){
     memset(m_dataBuffer, 0, DATA_BUFFER_SIZE);
 }
 
-
 void radfetComHandler::removeProcessedData(U32 size){
     if(size >= m_dataBufferSize){
         clearDataBuffer();
@@ -239,9 +235,7 @@ void radfetComHandler::removeProcessedData(U32 size){
 
 //TODO Validate raw data (e.g. check for expected ranges, consistency with previous readings, etc.)
 
-
 // TODO Convert to Dose
-
 
 void radfetComHandler::takeRadiationReading(){
     sendSensorCommand("MEASURE");
@@ -249,7 +243,7 @@ void radfetComHandler::takeRadiationReading(){
 
 void radfetComHandler::sendSensorCommand(const char* command){
     Fw::Buffer commandBuffer(reinterpret_cast<U8*>(const_cast<char*>(command)), strlen(command));
-    
+
     Drv::ByteStreamStatus status = this->commandOut_out(0, commandBuffer);
 
     if (status != Drv::ByteStreamStatus::OP_OK) {
