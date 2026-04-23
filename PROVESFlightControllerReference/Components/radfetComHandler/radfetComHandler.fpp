@@ -10,7 +10,7 @@ module Components {
             interval: U32 @< Reading interval in seconds
         )
 
-        @ Stop Radiation Readings  
+        @ Stop Radiation Readings
         sync command STOP_READINGS()
 
         @ Take immediate radiation reading
@@ -30,28 +30,28 @@ module Components {
 
         event ReadingStarted(interval: U32) \
             severity activity high format "Started periodic readings every {} seconds"
-        
+
         event ReadingStopped() \
             severity activity high format "Stopped Radiation Readings"
-        
+
         event ReadingComplete(value: U32, timestamp: U32) \
             severity activity high format "Radiation reading: {} counts at timestamp {}"
-        
+
         #event StorageError(error: U32) \
             #everity warning high format "Flash storage error: {}"
-        
+
         event SensorError(error: U32) \
             severity warning high format "Sensor communication error: {}"
-        
+
         event CommandSuccess(cmd: string) \
             severity activity high format "Command {} sent successfully"
-        
+
         event RawDataReceived(counts: U32) \
             severity activity low format "Raw sensor Counts: {}"
 
         event ConversionError(rawCounts: U32, errorCode: U8) \
             severity warning high format "Error with Raw Counts {} (error: {})"
-   
+
         event DownlinkRequested(numPackets: U32) \
             severity activity high format "Downlink requested for {} packets"
 
@@ -80,7 +80,7 @@ module Components {
         @ Receives data from PayloadCom
         sync input port dataIn: Drv.ByteStreamData
 
-        @ Sends commands to RADFET via PayloadCom  
+        @ Sends commands to RADFET via PayloadCom
         output port commandOut: Drv.ByteStreamSend
 
         @ Port for scheduling readings periodically
@@ -88,8 +88,6 @@ module Components {
 
         @ Return RX buffers to UART driver
         output port bufferReturn: Fw.BufferSend
-
-
 
         time get port timeCaller
         command reg port cmdRegOut
