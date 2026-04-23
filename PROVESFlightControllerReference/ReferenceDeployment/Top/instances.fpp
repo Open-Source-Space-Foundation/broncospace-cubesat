@@ -239,5 +239,5 @@ module ReferenceDeployment {
 
   instance picoTempManager: Drv.PicoTempManager base id 0x10079000
 
-  instance radfetComHandler: Components.radfetComHandler base id 0x10008000 
+  instance radfetComHandler: Components.radfetComHandler base id 0x10008000
 }
