@@ -7,9 +7,10 @@
 #ifndef Components_radfetComHandler_HPP
 #define Components_radfetComHandler_HPP
 
-#include "PROVESFlightControllerReference/Components/radfetComHandler/radfetComHandlerComponentAc.hpp"
 #include <Os/File.hpp>
 #include <string>
+
+#include "PROVESFlightControllerReference/Components/radfetComHandler/radfetComHandlerComponentAc.hpp"
 
 namespace Components {
 
@@ -54,7 +55,7 @@ class radfetComHandler final : public radfetComHandlerComponentBase {
     //!
     //! Start Radiation Readings
     void START_READINGS_cmdHandler(FwOpcodeType opCode,  //!< The opcode
-                                   U32 cmdSeq           //!< The command sequence number
+                                   U32 cmdSeq            //!< The command sequence number
                                    ) override;
 
     //! Handler implementation for command STOP_READINGS
@@ -67,17 +68,17 @@ class radfetComHandler final : public radfetComHandlerComponentBase {
     //! Handler implementation for command TAKE_READING
     //!
     //! Take immediate radiation reading
-    /*void RUN_CYCLE_cmdHandler(FwOpcodeType opCode,  //!< The opcode
-                                 U32 cmdSeq            //!< The command sequence number
-                                 ) override;*/ //not needed since we can just use START/STOP for periodic readings and TAKE_READING for single readings for CADENCE later if needed
+    //! void RUN_CYCLE_cmdHandler(FwOpcodeType opCode,  //!< The opcode
+    //!                             U32 cmdSeq            //!< The command sequence number
+    //!                             ) override; //!<not needed since we can just use START/STOP for periodic readings
+    //!                             and TAKE_READING for single readings for CADENCE later if needed
 
     //! Handler implementation for command SEND_COMMAND
     //!
     //! Send command to radFET sensor
     void SEND_COMMAND_cmdHandler(FwOpcodeType opCode,  //!< The opcode
                                  U32 cmdSeq,           //!< The command sequence number
-                                 const Fw::CmdStringArg& cmd
-                                ) override;
+                                 const Fw::CmdStringArg& cmd) override;
 
     void DOWNLINK_REQUEST_cmdHandler(FwOpcodeType opCode, 
                                      U32 cmdSeq,
@@ -94,17 +95,16 @@ class radfetComHandler final : public radfetComHandlerComponentBase {
     bool validateRawData(U32 rawCounts);
     void takeRadiationReading();
     void sendSensorCommand(const char* command);
-    //U32 calculateChecksum(void* data, U32 size);
+    // U32 calculateChecksum(void* data, U32 size);
     void removeProcessedData(U32 size);
 
 
     bool parseDownlinkPacket(const U8* data, U32 size);
 
-
-    //bool m_periodicReadings;
-    //U32 m_readingInterval;
+    // bool m_periodicReadings;
+    // U32 m_readingInterval;
     U32 m_readingsCount;
-    //U32 m_storedReadings;  // for CADENCE
+    // U32 m_storedReadings;  // for CADENCE
     U32 m_lastRawCounts;
     U32 m_lastReadingTimestamp;
     U32 m_packetsDownlinked;
@@ -116,17 +116,17 @@ class radfetComHandler final : public radfetComHandlerComponentBase {
     U8 m_dataBuffer[DATA_BUFFER_SIZE];
     U32 m_dataBufferSize;
 
-    static constexpr U8  RESPONSE_START_MARKER = 0xAA;
-    static constexpr U32 RESPONSE_SIZE         = 6;
+    static constexpr U8 RESPONSE_START_MARKER = 0xAA;
+    static constexpr U32 RESPONSE_SIZE = 6;
 
-    static constexpr U8  DOWNLINK_START_MARKER = 0xBB;
-    static constexpr U8  DOWNLINK_END_MARKER   = 0xEE;
+    static constexpr U8 DOWNLINK_START_MARKER = 0xBB;
+    static constexpr U8 DOWNLINK_END_MARKER = 0xEE;
 
-    static constexpr U32 DOWNLINK_TIMEOUT_TICKS = 30; // 30s at 1Hz
+    static constexpr U32 DOWNLINK_TIMEOUT_TICKS = 30;  // 30s at 1Hz
 
     struct RadfetReading {
-        U8  moduleNum;
-        U8  radfetNum;
+        U8 moduleNum;
+        U8 radfetNum;
         U16 adcValue;
         U32 timestamp;
     };
@@ -137,14 +137,12 @@ class radfetComHandler final : public radfetComHandlerComponentBase {
         U32 packetId;
         U32 timestampStart;
         U32 timestampEnd;
-        U8  sampleCount;
+        U8 sampleCount;
         RadfetReading readings[READINGS_PER_PACKET];
         U32 checksum;
     };
-
-
 };
 
-}// namespace Components
+}  // namespace Components
 
 #endif

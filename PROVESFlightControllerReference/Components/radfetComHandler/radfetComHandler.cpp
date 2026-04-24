@@ -5,6 +5,7 @@
 // ======================================================================
 
 #include "PROVESFlightControllerReference/Components/radfetComHandler/radfetComHandler.hpp"
+
 #include <Fw/Types/Assert.hpp>
 #include <Os/File.hpp>
 #include <cstring>
@@ -16,29 +17,29 @@ namespace Components {
 // Component construction and destruction
 // ----------------------------------------------------------------------
 
-radfetComHandler ::radfetComHandler(const char* const compName) : radfetComHandlerComponentBase(compName),
-    //m_periodicReadings(false),
-    //m_readingInterval(0),
-    m_readingsCount(0),
-    //m_storedReadings(0),
-    m_lastRawCounts(0),
-    m_lastReadingTimestamp(0),
-    m_packetsDownlinked(0),
-    //m_currentRadiation(0),
-    m_downlinkExpected(0),
-    m_downlinkReceived(0),
-    m_downlinkTimeoutTicks(0),
-    m_dataBufferSize(0)
-{
+radfetComHandler::radfetComHandler(const char* const compName)
+    : radfetComHandlerComponentBase(compName),
+      // m_periodicReadings(false),
+      // m_readingInterval(0),
+      m_readingsCount(0),
+      // m_storedReadings(0),
+      m_lastRawCounts(0),
+      m_lastReadingTimestamp(0),
+      m_packetsDownlinked(0),
+      // m_currentRadiation(0),
+      m_downlinkExpected(0),
+      m_downlinkReceived(0),
+      m_downlinkTimeoutTicks(0),
+      m_dataBufferSize(0) {
     memset(m_dataBuffer, 0, DATA_BUFFER_SIZE);
 }
 
-radfetComHandler ::~radfetComHandler() {
-//TODO - Open file
+radfetComHandler::~radfetComHandler() {
+    // TODO - Open file
 }
 
-void radfetComHandler ::dataIn_handler(FwIndexType portNum, Fw::Buffer& buffer, const Drv::ByteStreamStatus& status){
-    if(status != Drv::ByteStreamStatus::OP_OK){
+void radfetComHandler::dataIn_handler(FwIndexType portNum, Fw::Buffer& buffer, const Drv::ByteStreamStatus& status) {
+    if (status != Drv::ByteStreamStatus::OP_OK) {
         this->log_WARNING_HI_SensorError(1);
         if (buffer.isValid()) {
             this->bufferReturn_out(0, buffer);
@@ -46,14 +47,14 @@ void radfetComHandler ::dataIn_handler(FwIndexType portNum, Fw::Buffer& buffer, 
         return;
     }
 
-    if (!buffer.isValid()){
+    if (!buffer.isValid()) {
         return;
     }
 
     const U8* data = buffer.getData();
     U32 dataSize = static_cast<U32>(buffer.getSize());
 
-    if (!accumulateSensorData(data, dataSize)){
+    if (!accumulateSensorData(data, dataSize)) {
         processSensorData();
         clearDataBuffer();
         accumulateSensorData(data, dataSize);
@@ -62,10 +63,9 @@ void radfetComHandler ::dataIn_handler(FwIndexType portNum, Fw::Buffer& buffer, 
     processSensorData();
 
     this->bufferReturn_out(0, buffer);
-
 }
 
-void radfetComHandler::schedIn_handler(FwIndexType portNum, U32 context){
+void radfetComHandler::schedIn_handler(FwIndexType portNum, U32 context) {
     if (m_downlinkExpected > 0 && m_downlinkTimeoutTicks > 0) {
         m_downlinkTimeoutTicks--;
         if (m_downlinkTimeoutTicks == 0) {
@@ -76,18 +76,18 @@ void radfetComHandler::schedIn_handler(FwIndexType portNum, U32 context){
     }
 }
 
-void radfetComHandler::START_READINGS_cmdHandler(FwOpcodeType opCode, U32 cmdSeq){
-   // m_periodicReadings = true;
-    //m_readingInterval = interval;
-    
-    //TODO OPEN FILE
+void radfetComHandler::START_READINGS_cmdHandler(FwOpcodeType opCode, U32 cmdSeq) {
+    // m_periodicReadings = true;
+    // m_readingInterval = interval;
+
+    // TODO OPEN FILE
     sendSensorCommand("START\n");
     this->log_ACTIVITY_HI_ReadingStarted();
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
 }
 
-void radfetComHandler::STOP_READINGS_cmdHandler(FwOpcodeType opCode, U32 cmdSeq){
-    //m_periodicReadings = false;
+void radfetComHandler::STOP_READINGS_cmdHandler(FwOpcodeType opCode, U32 cmdSeq) {
+    // m_periodicReadings = false;
     sendSensorCommand("STOP\n");
     this->log_ACTIVITY_HI_ReadingStopped();
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
@@ -96,9 +96,9 @@ void radfetComHandler::STOP_READINGS_cmdHandler(FwOpcodeType opCode, U32 cmdSeq)
 /*void radfetComHandler::RUN_CYCLE_cmdHandler(FwOpcodeType opCode, U32 cmdSeq){
     sendSensorCommand("RUN\n");
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
-}*/ 
+}*/
 
-void radfetComHandler::SEND_COMMAND_cmdHandler(FwOpcodeType opCode, U32 cmdSeq, const Fw::CmdStringArg& cmd){
+void radfetComHandler::SEND_COMMAND_cmdHandler(FwOpcodeType opCode, U32 cmdSeq, const Fw::CmdStringArg& cmd) {
     sendSensorCommand(cmd.toChar());
 
     Fw::LogStringArg logCmd(cmd);
@@ -107,11 +107,10 @@ void radfetComHandler::SEND_COMMAND_cmdHandler(FwOpcodeType opCode, U32 cmdSeq, 
 }
 
 void radfetComHandler::DOWNLINK_REQUEST_cmdHandler(FwOpcodeType opCode, U32 cmdSeq, U32 numPackets) {
-
     this->log_ACTIVITY_HI_DownlinkRequested(numPackets);
 
-    m_downlinkExpected     = numPackets;
-    m_downlinkReceived     = 0;
+    m_downlinkExpected = numPackets;
+    m_downlinkReceived = 0;
     m_downlinkTimeoutTicks = DOWNLINK_TIMEOUT_TICKS;
     // send DOWNLINK_REQUEST command to payload over UART
     // format: "DL:<numPackets>\n"
@@ -122,9 +121,9 @@ void radfetComHandler::DOWNLINK_REQUEST_cmdHandler(FwOpcodeType opCode, U32 cmdS
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
 }
 
-void radfetComHandler::processSensorData(){
-    while(m_dataBufferSize >= RESPONSE_SIZE){
-    // check for downlink packet first (larger packets, 0xBB marker)
+void radfetComHandler::processSensorData() {
+    while (m_dataBufferSize >= RESPONSE_SIZE) {
+        // check for downlink packet first (larger packets, 0xBB marker)
         if (m_dataBuffer[0] == DOWNLINK_START_MARKER) {
             U32 packetSize = sizeof(RadfetPacket) + 2;  // +2 for start/end markers
             if (m_dataBufferSize < packetSize) {
@@ -162,9 +161,12 @@ void radfetComHandler::processSensorData(){
 }
 
 bool radfetComHandler::parseDownlinkPacket(const U8* data, U32 size) {
-    if (size < sizeof(RadfetPacket) + 2) return false;
-    if (data[0] != DOWNLINK_START_MARKER) return false;
-    if (data[size - 1] != DOWNLINK_END_MARKER) return false;
+    if (size < sizeof(RadfetPacket) + 2)
+        return false;
+    if (data[0] != DOWNLINK_START_MARKER)
+        return false;
+    if (data[size - 1] != DOWNLINK_END_MARKER)
+        return false;
 
     RadfetPacket pkt;
     memcpy(&pkt, &data[1], sizeof(pkt));
@@ -193,20 +195,20 @@ bool radfetComHandler::parseDownlinkPacket(const U8* data, U32 size) {
     m_downlinkReceived++;
     if (m_downlinkExpected > 0 && m_downlinkReceived >= m_downlinkExpected) {
         this->log_ACTIVITY_HI_DownlinkComplete(m_downlinkReceived);
-        m_downlinkExpected     = 0;
-        m_downlinkReceived     = 0;
+        m_downlinkExpected = 0;
+        m_downlinkReceived = 0;
         m_downlinkTimeoutTicks = 0;
     }
 
     return true;
 }
 
-bool radfetComHandler::parseRadiationData(const U8* data, U32 size, U32& rawCounts){
-    if (size < RESPONSE_SIZE){
+bool radfetComHandler::parseRadiationData(const U8* data, U32 size, U32& rawCounts) {
+    if (size < RESPONSE_SIZE) {
         return false;
     }
 
-    if(data[0] != RESPONSE_START_MARKER){
+    if (data[0] != RESPONSE_START_MARKER) {
         return false;
     }
 
@@ -216,11 +218,11 @@ bool radfetComHandler::parseRadiationData(const U8* data, U32 size, U32& rawCoun
     rawCounts = (static_cast<U32>(data[3]) << 8) | static_cast<U32>(data[4]);
 
     U8 calculatedChecksum = 0;
-    for(U32 i = 0; i < RESPONSE_SIZE - 1; i++){
+    for (U32 i = 0; i < RESPONSE_SIZE - 1; i++) {
         calculatedChecksum ^= data[i];
     }
 
-    if(calculatedChecksum != data[RESPONSE_SIZE -1]){
+    if (calculatedChecksum != data[RESPONSE_SIZE - 1]) {
         this->log_WARNING_HI_SensorError(2);
         return false;
     }
@@ -228,8 +230,8 @@ bool radfetComHandler::parseRadiationData(const U8* data, U32 size, U32& rawCoun
     return true;
 }
 
-bool radfetComHandler::accumulateSensorData(const U8* data, U32 size){
-    if(m_dataBufferSize + size > DATA_BUFFER_SIZE){
+bool radfetComHandler::accumulateSensorData(const U8* data, U32 size) {
+    if (m_dataBufferSize + size > DATA_BUFFER_SIZE) {
         return false;
     }
 
@@ -238,29 +240,29 @@ bool radfetComHandler::accumulateSensorData(const U8* data, U32 size){
     return true;
 }
 
-void radfetComHandler::clearDataBuffer(){
+void radfetComHandler::clearDataBuffer() {
     m_dataBufferSize = 0;
     memset(m_dataBuffer, 0, DATA_BUFFER_SIZE);
 }
 
-void radfetComHandler::removeProcessedData(U32 size){
-    if(size >= m_dataBufferSize){
+void radfetComHandler::removeProcessedData(U32 size) {
+    if (size >= m_dataBufferSize) {
         clearDataBuffer();
-    }else{
+    } else {
         memmove(m_dataBuffer, &m_dataBuffer[size], m_dataBufferSize - size);
         m_dataBufferSize -= size;
     }
 }
 
-//TODO Validate raw data (e.g. check for expected ranges, consistency with previous readings, etc.)
+// TODO Validate raw data (e.g. check for expected ranges, consistency with previous readings, etc.)
 
 // TODO Convert to Dose
 
-void radfetComHandler::takeRadiationReading(){
+void radfetComHandler::takeRadiationReading() {
     sendSensorCommand("MEASURE");
 }
 
-void radfetComHandler::sendSensorCommand(const char* command){
+void radfetComHandler::sendSensorCommand(const char* command) {
     Fw::Buffer commandBuffer(reinterpret_cast<U8*>(const_cast<char*>(command)), strlen(command));
 
     Drv::ByteStreamStatus status = this->commandOut_out(0, commandBuffer);
@@ -270,7 +272,7 @@ void radfetComHandler::sendSensorCommand(const char* command){
     }
 }
 
-//TODO Store to Flash
+// TODO Store to Flash
 
 /*U32 radfetComHandler::calculateChecksum(void* data, U32 size){
     U32 checksum = 0;
@@ -282,6 +284,6 @@ void radfetComHandler::sendSensorCommand(const char* command){
     return checksum;
 }*/
 
-//TODO Open Data File
+// TODO Open Data File
 
-}
+}  // namespace Components

@@ -28,7 +28,7 @@ module Components {
 
         event ReadingStarted() \
             severity activity high format "Started periodic RADFET cycling"
-        
+
         event ReadingStopped() \
             severity activity high format "Stopped Radiation Readings"
 
