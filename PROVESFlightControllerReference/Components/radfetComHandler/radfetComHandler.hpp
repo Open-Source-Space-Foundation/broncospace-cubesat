@@ -54,8 +54,7 @@ class radfetComHandler final : public radfetComHandlerComponentBase {
     //!
     //! Start Radiation Readings
     void START_READINGS_cmdHandler(FwOpcodeType opCode,  //!< The opcode
-                                   U32 cmdSeq,           //!< The command sequence number
-                                   U32 interval          //!< Reading interval in seconds
+                                   U32 cmdSeq           //!< The command sequence number
                                    ) override;
 
     //! Handler implementation for command STOP_READINGS
@@ -68,7 +67,7 @@ class radfetComHandler final : public radfetComHandlerComponentBase {
     //! Handler implementation for command TAKE_READING
     //!
     //! Take immediate radiation reading
-    void TAKE_READING_cmdHandler(FwOpcodeType opCode,  //!< The opcode
+    void RUN_CYCLE_cmdHandler(FwOpcodeType opCode,  //!< The opcode
                                  U32 cmdSeq            //!< The command sequence number
                                  ) override;
 
@@ -102,13 +101,16 @@ class radfetComHandler final : public radfetComHandlerComponentBase {
     bool parseDownlinkPacket(const U8* data, U32 size);
 
 
-    bool m_periodicReadings;
-    U32 m_readingInterval;
+    //bool m_periodicReadings;
+    //U32 m_readingInterval;
     U32 m_readingsCount;
     //U32 m_storedReadings;  // for CADENCE
     U32 m_lastRawCounts;
-    U32  m_lastReadingTimestamp;
-    U32  m_packetsDownlinked;
+    U32 m_lastReadingTimestamp;
+    U32 m_packetsDownlinked;
+    U32 m_downlinkExpected;
+    U32 m_downlinkReceived;
+    U32 m_downlinkTimeoutTicks;
 
     static constexpr U32 DATA_BUFFER_SIZE = 512;
     U8 m_dataBuffer[DATA_BUFFER_SIZE];
@@ -119,6 +121,8 @@ class radfetComHandler final : public radfetComHandlerComponentBase {
 
     static constexpr U8  DOWNLINK_START_MARKER = 0xBB;
     static constexpr U8  DOWNLINK_END_MARKER   = 0xEE;
+
+    static constexpr U32 DOWNLINK_TIMEOUT_TICKS = 30; // 30s at 1Hz
 
     struct RadfetReading {
         U8  moduleNum;

@@ -6,15 +6,13 @@ module Components {
         #----------#
 
         @ Start Radiation Readings
-        sync command START_READINGS(
-            interval: U32 @< Reading interval in seconds
-        )
+        sync command START_READINGS()
 
         @ Stop Radiation Readings
         sync command STOP_READINGS()
 
-        @ Take immediate radiation reading
-        sync command TAKE_READING()
+        @ Take radiation reading
+        sync command RUN_CYCLE()
 
         @ Send command to radFET sensor
         sync command SEND_COMMAND(cmd: string)
@@ -28,9 +26,9 @@ module Components {
         #  events  #
         #----------#
 
-        event ReadingStarted(interval: U32) \
-            severity activity high format "Started periodic readings every {} seconds"
-
+        event ReadingStarted() \
+            severity activity high format "Started periodic RADFET cycling"
+        
         event ReadingStopped() \
             severity activity high format "Stopped Radiation Readings"
 
@@ -63,6 +61,9 @@ module Components {
 
         event DownlinkError(error: U32) \
             severity warning high format "Downlink error: {}"
+
+        event DownlinkTimeout(received: U32, expected: U32) \
+            severity warning high format "Downlink timed out: received {} of {} expected packets"
 
         #-------------#
         #  telemetry  #

@@ -17,15 +17,18 @@ namespace Components {
 // ----------------------------------------------------------------------
 
 radfetComHandler ::radfetComHandler(const char* const compName) : radfetComHandlerComponentBase(compName),
-    m_periodicReadings(false),
-    m_readingInterval(0),
+    //m_periodicReadings(false),
+    //m_readingInterval(0),
     m_readingsCount(0),
     //m_storedReadings(0),
     m_lastRawCounts(0),
     m_lastReadingTimestamp(0),
     m_packetsDownlinked(0),
-    m_dataBufferSize(0)
     //m_currentRadiation(0),
+    m_downlinkExpected(0),
+    m_downlinkReceived(0),
+    m_downlinkTimeoutTicks(0),
+    m_dataBufferSize(0)
 {
     memset(m_dataBuffer, 0, DATA_BUFFER_SIZE);
 }
@@ -63,30 +66,35 @@ void radfetComHandler ::dataIn_handler(FwIndexType portNum, Fw::Buffer& buffer, 
 }
 
 void radfetComHandler::schedIn_handler(FwIndexType portNum, U32 context){
-    if (m_periodicReadings){
-        takeRadiationReading();
+    if (m_downlinkExpected > 0 && m_downlinkTimeoutTicks > 0) {
+        m_downlinkTimeoutTicks--;
+        if (m_downlinkTimeoutTicks == 0) {
+            this->log_WARNING_HI_DownlinkTimeout(m_downlinkReceived, m_downlinkExpected);
+            m_downlinkExpected = 0;
+            m_downlinkReceived = 0;
+        }
     }
 }
 
-void radfetComHandler::START_READINGS_cmdHandler(FwOpcodeType opCode, U32 cmdSeq, U32 interval){
-    m_periodicReadings = true;
-    m_readingInterval = interval;
-
+void radfetComHandler::START_READINGS_cmdHandler(FwOpcodeType opCode, U32 cmdSeq){
+   // m_periodicReadings = true;
+    //m_readingInterval = interval;
+    
     //TODO OPEN FILE
-    sendSensorCommand("START");
-    this->log_ACTIVITY_HI_ReadingStarted(interval);
+    sendSensorCommand("START\n");
+    this->log_ACTIVITY_HI_ReadingStarted();
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
 }
 
 void radfetComHandler::STOP_READINGS_cmdHandler(FwOpcodeType opCode, U32 cmdSeq){
-    m_periodicReadings = false;
-    sendSensorCommand("STOP");
+    //m_periodicReadings = false;
+    sendSensorCommand("STOP\n");
     this->log_ACTIVITY_HI_ReadingStopped();
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
 }
 
-void radfetComHandler::TAKE_READING_cmdHandler(FwOpcodeType opCode, U32 cmdSeq){
-    takeRadiationReading();
+void radfetComHandler::RUN_CYCLE_cmdHandler(FwOpcodeType opCode, U32 cmdSeq){
+    sendSensorCommand("RUN\n");
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
 }
 
@@ -102,6 +110,9 @@ void radfetComHandler::DOWNLINK_REQUEST_cmdHandler(FwOpcodeType opCode, U32 cmdS
 
     this->log_ACTIVITY_HI_DownlinkRequested(numPackets);
 
+    m_downlinkExpected     = numPackets;
+    m_downlinkReceived     = 0;
+    m_downlinkTimeoutTicks = DOWNLINK_TIMEOUT_TICKS;
     // send DOWNLINK_REQUEST command to payload over UART
     // format: "DL:<numPackets>\n"
     char cmd[32];
@@ -178,6 +189,14 @@ bool radfetComHandler::parseDownlinkPacket(const U8* data, U32 size) {
 
     m_packetsDownlinked++;
     this->tlmWrite_PacketsDownlinked(m_packetsDownlinked);
+
+    m_downlinkReceived++;
+    if (m_downlinkExpected > 0 && m_downlinkReceived >= m_downlinkExpected) {
+        this->log_ACTIVITY_HI_DownlinkComplete(m_downlinkReceived);
+        m_downlinkExpected     = 0;
+        m_downlinkReceived     = 0;
+        m_downlinkTimeoutTicks = 0;
+    }
 
     return true;
 }
