@@ -11,8 +11,8 @@ module Components {
         @ Stop Radiation Readings
         sync command STOP_READINGS()
 
-        @ Take radiation reading
-        sync command RUN_CYCLE()
+        #@ Take radiation reading
+        #sync command TAKE_READING()
 
         @ Send command to radFET sensor
         sync command SEND_COMMAND(cmd: string)

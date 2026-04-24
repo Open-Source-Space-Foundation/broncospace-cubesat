@@ -67,9 +67,9 @@ class radfetComHandler final : public radfetComHandlerComponentBase {
     //! Handler implementation for command TAKE_READING
     //!
     //! Take immediate radiation reading
-    void RUN_CYCLE_cmdHandler(FwOpcodeType opCode,  //!< The opcode
+    /*void RUN_CYCLE_cmdHandler(FwOpcodeType opCode,  //!< The opcode
                                  U32 cmdSeq            //!< The command sequence number
-                                 ) override;
+                                 ) override;*/ //not needed since we can just use START/STOP for periodic readings and TAKE_READING for single readings for CADENCE later if needed
 
     //! Handler implementation for command SEND_COMMAND
     //!

@@ -93,10 +93,10 @@ void radfetComHandler::STOP_READINGS_cmdHandler(FwOpcodeType opCode, U32 cmdSeq)
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
 }
 
-void radfetComHandler::RUN_CYCLE_cmdHandler(FwOpcodeType opCode, U32 cmdSeq){
+/*void radfetComHandler::RUN_CYCLE_cmdHandler(FwOpcodeType opCode, U32 cmdSeq){
     sendSensorCommand("RUN\n");
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
-}
+}*/ 
 
 void radfetComHandler::SEND_COMMAND_cmdHandler(FwOpcodeType opCode, U32 cmdSeq, const Fw::CmdStringArg& cmd){
     sendSensorCommand(cmd.toChar());
