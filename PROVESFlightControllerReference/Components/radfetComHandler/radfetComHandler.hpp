@@ -141,6 +141,10 @@ class radfetComHandler final : public radfetComHandlerComponentBase {
         RadfetReading readings[READINGS_PER_PACKET];
         U32 checksum;
     };
+
+    static_assert(sizeof(RadfetReading) == 8, "RadfetReading size mismatch");
+    static_assert(sizeof(RadfetPacket) == 180, "RadfetPacket size mismatch");
+
 };
 
 }  // namespace Components
