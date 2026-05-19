@@ -8,6 +8,9 @@ module Components {
         @ Send an arbitrary command string to the SatNOGS module over UART
         sync command SEND_COMMAND(cmd: string)
 
+        @ Close the log file (call before requesting file downlink)
+        sync command CLOSE_LOG()
+
         #----------#
         #  Events  #
         #----------#
@@ -29,6 +32,15 @@ module Components {
 
         event LineTruncated() \
             severity warning low format "SatNOGS line exceeded buffer (truncated)"
+
+        event LogFileOpened(path: string) \
+            severity activity high format "SatNOGS log file opened: {}"
+
+        event LogFileError(op: U32, stat: I32) \
+            severity warning high format "SatNOGS log file error op={} status={}"
+
+        event LogFileClosed() \
+            severity activity high format "SatNOGS log file closed"
 
         #-------------#
         #  Telemetry  #
