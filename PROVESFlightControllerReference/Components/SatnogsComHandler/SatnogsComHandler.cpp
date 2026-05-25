@@ -1,7 +1,8 @@
 // ======================================================================
 // \title  SatnogsComHandler.cpp
 // \brief  Parses ASCII "LOG: <content>\n" lines from a SatNOGS-COMMS module
-//         and fires F Prime events/telemetry for key line types.
+//         and appends every line to /satnogs.log on the SD card for later
+//         downlink via FileHandling.fileDownlink.
 //
 // Protocol (from ICD):
 //   - Every line has the form: LOG: <content>\n
@@ -23,8 +24,47 @@ SatnogsComHandler::SatnogsComHandler(const char* compName)
       m_lineBufSize(0),
       m_linesReceived(0),
       m_txUhfCount(0),
-      m_booted(false) {
+      m_booted(false),
+      m_fileOpen(false) {
     memset(m_lineBuf, 0, sizeof(m_lineBuf));
+}
+
+// ----------------------------------------------------------------------
+// openLogFile — opens /satnogs.log in append mode (lazy, on first data)
+// ----------------------------------------------------------------------
+
+void SatnogsComHandler::openLogFile() {
+    Os::File::Status stat = m_logFile.open(LOG_FILE_PATH, Os::File::OPEN_APPEND);
+    if (stat != Os::File::OP_OK) {
+        this->log_WARNING_HI_LogFileError(OP_OPEN, static_cast<I32>(stat));
+        return;
+    }
+    m_fileOpen = true;
+    Fw::LogStringArg path(LOG_FILE_PATH);
+    this->log_ACTIVITY_HI_LogFileOpened(path);
+}
+
+// ----------------------------------------------------------------------
+// writeToLog — writes "LOG: <content>\n" to the open file
+// ----------------------------------------------------------------------
+
+void SatnogsComHandler::writeToLog(const char* line, U32 len) {
+    if (!m_fileOpen) {
+        return;
+    }
+
+    // Write the full original line including "LOG: " prefix and newline
+    FwSizeType written = static_cast<FwSizeType>(len);
+    Os::File::Status stat = m_logFile.write(reinterpret_cast<const U8*>(line), written);
+    if (stat != Os::File::OP_OK) {
+        this->log_WARNING_HI_LogFileError(OP_WRITE, static_cast<I32>(stat));
+        return;
+    }
+
+    // Write newline
+    const U8 newline = '\n';
+    FwSizeType nlWritten = 1;
+    m_logFile.write(&newline, nlWritten);
 }
 
 // ----------------------------------------------------------------------
@@ -45,6 +85,11 @@ void SatnogsComHandler::dataIn_handler(FwIndexType portNum, Fw::Buffer& buffer,
         return;
     }
 
+    // Open file lazily on first data received
+    if (!m_fileOpen) {
+        openLogFile();
+    }
+
     const U8* data = buffer.getData();
     U32 size = static_cast<U32>(buffer.getSize());
 
@@ -59,6 +104,8 @@ void SatnogsComHandler::dataIn_handler(FwIndexType portNum, Fw::Buffer& buffer,
             m_lineBuf[m_lineBufSize] = '\0';
 
             if (m_lineBufSize > 0) {
+                // Write raw line to SD card before parsing
+                writeToLog(m_lineBuf, m_lineBufSize);
                 processLine(m_lineBuf, m_lineBufSize);
             }
             m_lineBufSize = 0;
@@ -79,10 +126,8 @@ void SatnogsComHandler::dataIn_handler(FwIndexType portNum, Fw::Buffer& buffer,
 // ----------------------------------------------------------------------
 
 void SatnogsComHandler::processLine(const char* line, U32 len) {
-    // Non-LOG lines (e.g. raw CM5 ASCII output) go directly to GDS
+    // Every valid SatNOGS line starts with "LOG: "
     if (len < LOG_PREFIX_LEN || strncmp(line, "LOG: ", LOG_PREFIX_LEN) != 0) {
-        Fw::LogStringArg msg(line);
-        this->log_ACTIVITY_LO_SatnogsLog(msg);
         return;
     }
 
@@ -136,9 +181,8 @@ void SatnogsComHandler::processLine(const char* line, U32 len) {
         return;
     }
 
-    // Catch-all: forward any unrecognized LOG: content to GDS
-    Fw::LogStringArg msg(content);
-    this->log_ACTIVITY_LO_SatnogsLog(msg);
+    // Everything else (hex data lines, config lines) is already written to
+    // the SD card above — no need to also fire an event for each one.
 }
 
 // ----------------------------------------------------------------------
@@ -174,6 +218,19 @@ void SatnogsComHandler::SEND_COMMAND_cmdHandler(FwOpcodeType opCode, U32 cmdSeq,
     sendToUart(cmd.toChar());
     Fw::LogStringArg logCmd(cmd);
     this->log_ACTIVITY_LO_SatnogsLog(logCmd);
+    this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
+}
+
+// ----------------------------------------------------------------------
+// CLOSE_LOG — safely closes the log file before requesting file downlink
+// ----------------------------------------------------------------------
+
+void SatnogsComHandler::CLOSE_LOG_cmdHandler(FwOpcodeType opCode, U32 cmdSeq) {
+    if (m_fileOpen) {
+        m_logFile.close();
+        m_fileOpen = false;
+        this->log_ACTIVITY_HI_LogFileClosed();
+    }
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
 }
 
