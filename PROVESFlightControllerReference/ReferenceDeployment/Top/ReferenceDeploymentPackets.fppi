@@ -116,10 +116,9 @@ telemetry packets ReferenceDeploymentPackets {
   }
 
   packet satnogsComHandler id 23 group 4 {
-    ReferenceDeployment.satnogsComHandler.RawCounts
-    ReferenceDeployment.satnogsComHandler.SensorStatus
-    ReferenceDeployment.satnogsComHandler.ReadingsCount
-    ReferenceDeployment.satnogsComHandler.PacketsDownlinked
+    ReferenceDeployment.satnogsComHandler.LinesReceived
+    ReferenceDeployment.satnogsComHandler.TxUhfCount
+    ReferenceDeployment.satnogsComHandler.LastSectionId
   }
 
   ### Health and Status Packets ###

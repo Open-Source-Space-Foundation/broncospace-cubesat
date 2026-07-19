@@ -246,7 +246,7 @@ module ReferenceDeployment {
 
   instance radfetComHandler: Components.radfetComHandler base id 0x10008000
 
-  instance satnogsComHandler: Components.radfetComHandler base id 0x10009000
+  instance satnogsComHandler: Components.SatnogsComHandler base id 0x10009000
 
   instance peripheralUartDriver2: Zephyr.ZephyrUartDriver base id 0x1007A000
 
