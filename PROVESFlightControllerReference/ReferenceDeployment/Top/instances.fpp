@@ -63,10 +63,7 @@ module ReferenceDeployment {
     stack size Default.STACK_SIZE \
     priority 13
 
-  instance payload: Components.PayloadCom base id 0x10008000 \
-    queue size Default.QUEUE_SIZE \
-    stack size Default.STACK_SIZE \
-    priority 13
+  
 
 
   # ----------------------------------------------------------------------
@@ -127,7 +124,7 @@ module ReferenceDeployment {
 
   instance gpioPayloadBatteryLS: Zephyr.ZephyrGpioDriver base id 0x1002A000
 
-  instance cameraHandler: Components.CameraHandler base id 0x1002B000
+  #instance cameraHandler: Components.CameraHandler base id 0x1002B000
 
   instance peripheralUartDriver: Zephyr.ZephyrUartDriver base id 0x1002C000
 
@@ -242,4 +239,5 @@ module ReferenceDeployment {
 
   instance picoTempManager: Drv.PicoTempManager base id 0x10079000
 
+  instance radfetComHandler: Components.radfetComHandler base id 0x10008000 
 }

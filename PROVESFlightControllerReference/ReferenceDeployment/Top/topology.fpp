@@ -74,8 +74,7 @@ module ReferenceDeployment {
     instance payloadBatteryLoadSwitch
     instance fsFormat
     instance fsSpace
-    instance payload
-    instance cameraHandler
+    instance radfetComHandler
     instance peripheralUartDriver
     instance payloadBufferManager
     instance cmdSeq
@@ -364,20 +363,17 @@ module ReferenceDeployment {
     }
 
     connections PayloadCom {
-      # PayloadCom <-> UART Driver
-      payload.uartForward -> peripheralUartDriver.$send
-      peripheralUartDriver.$recv -> payload.uartDataIn
+        # radfetComHandler <-> UART Driver
+        peripheralUartDriver.$recv        -> radfetComHandler.dataIn
+        radfetComHandler.commandOut       -> peripheralUartDriver.$send
+        radfetComHandler.bufferReturn     -> peripheralUartDriver.recvReturnIn
 
-      # Buffer return path (critical! - matches ComStub pattern)
-      payload.bufferReturn -> peripheralUartDriver.recvReturnIn
+        # UART driver buffer management
+        peripheralUartDriver.allocate     -> payloadBufferManager.bufferGetCallee
+        peripheralUartDriver.deallocate   -> payloadBufferManager.bufferSendIn
 
-      # PayloadCom <-> CameraHandler data flow
-      payload.uartDataOut -> cameraHandler.dataIn
-      cameraHandler.commandOut -> payload.commandIn
-
-      # UART driver allocates/deallocates from BufferManager
-      peripheralUartDriver.allocate -> payloadBufferManager.bufferGetCallee
-      peripheralUartDriver.deallocate -> payloadBufferManager.bufferSendIn
+        # schedIn for periodic readings
+        rateGroup1Hz.RateGroupMemberOut[20] -> radfetComHandler.schedIn
     }
 
     #connections MyConnectionGraph {

@@ -106,13 +106,13 @@ telemetry packets ReferenceDeploymentPackets {
 
   ### Payload Meta Data Packets ###
 
-  packet CameraDebug id 14 group 4 {
-    ReferenceDeployment.cameraHandler.BytesReceived
-    ReferenceDeployment.cameraHandler.ExpectedSize
-    ReferenceDeployment.cameraHandler.IsReceiving
-    ReferenceDeployment.cameraHandler.FileOpen
-    ReferenceDeployment.cameraHandler.FileErrorCount
-    ReferenceDeployment.cameraHandler.ImagesSaved
+  packet radfetComHandler id 14 group 4 {
+    ReferenceDeployment.radfetComHandler.RawCounts
+    ReferenceDeployment.radfetComHandler.SensorStatus
+    ReferenceDeployment.radfetComHandler.ReadingsCount
+    ReferenceDeployment.radfetComHandler.PacketsDownlinked
+  #  ReferenceDeployment.radfetComHandler.FileErrorCount
+  #  ReferenceDeployment.radfetComHandler.ImagesSaved
   }
 
   ### Health and Status Packets ###
