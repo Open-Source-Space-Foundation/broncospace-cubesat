@@ -115,12 +115,20 @@ telemetry packets ReferenceDeploymentPackets {
   #  ReferenceDeployment.radfetComHandler.ImagesSaved
   }
 
+  packet satnogsComHandler id 23 group 4 {
+    ReferenceDeployment.satnogsComHandler.RawCounts
+    ReferenceDeployment.satnogsComHandler.SensorStatus
+    ReferenceDeployment.satnogsComHandler.ReadingsCount
+    ReferenceDeployment.satnogsComHandler.PacketsDownlinked
+  }
+
   ### Health and Status Packets ###
   packet Health id 2 group 5 {
     ComCcsdsLora.comQueue.comQueueDepth
     ComCcsdsLora.commsBufferManager.HiBuffs
 #    ComCcsdsSband.comQueue.comQueueDepth
 #    ComCcsdsSband.commsBufferManager.HiBuffs
+    radioBufferManager.NoBuffs
     CdhCore.cmdDisp.CommandsDispatched
     CdhCore.cmdDisp.CommandsDropped
     ReferenceDeployment.rateGroup50Hz.RgMaxTime
@@ -148,6 +156,7 @@ telemetry packets ReferenceDeploymentPackets {
     ComCcsdsLora.comQueue.buffQueueDepth
 #    ComCcsdsSband.comQueue.buffQueueDepth
     payloadBufferManager.HiBuffs
+    radioBufferManager.HiBuffs
     CdhCore.tlmSend.SendLevel
   }
 
@@ -301,6 +310,10 @@ telemetry packets ReferenceDeploymentPackets {
 
   payloadBufferManager.TotalBuffs
   payloadBufferManager.CurrBuffs
+
+  radioBufferManager.EmptyBuffs
+  radioBufferManager.TotalBuffs
+  radioBufferManager.CurrBuffs
 
   CdhCore.version.FrameworkVersion
   CdhCore.version.ProjectVersion
