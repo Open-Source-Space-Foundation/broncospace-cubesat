@@ -144,12 +144,14 @@ void setupTopology(const TopologyState& state) {
 
     // UART from the board to the payload
     peripheralUartDriver.configure(state.peripheralUart, state.peripheralBaudRate);
+    // UART from the board to the SatNOGS-COMMS module
+    peripheralUartDriver2.configure(state.peripheralUart2, state.peripheralBaudRate2);
     imuManager.configure(state.lis2mdlDevice, state.lsm6dsoDevice);
     ina219SysManager.configure(state.ina219SysDevice);
     ina219SolManager.configure(state.ina219SolDevice);
 
     // Configure camera handlers | NOT ALL SATS HAVE CAMERAS
-    cameraHandler.configure(0);  // Camera 0
+    // cameraHandler.configure(0);  // Camera 0
 
     // Configure TMP112 temperature sensor managers
     tmp112Face0Manager.configure(state.tca9548aDevice, state.muxChannel0Device, state.face0TempDevice, true);
