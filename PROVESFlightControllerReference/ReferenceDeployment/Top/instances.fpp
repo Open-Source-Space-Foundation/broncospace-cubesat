@@ -63,12 +63,6 @@ module ReferenceDeployment {
     stack size Default.STACK_SIZE \
     priority 13
 
-  instance payload: Components.PayloadCom base id 0x10008000 \
-    queue size Default.QUEUE_SIZE \
-    stack size Default.STACK_SIZE \
-    priority 13
-
-
   # ----------------------------------------------------------------------
   # Queued component instances
   # ----------------------------------------------------------------------
@@ -95,11 +89,19 @@ module ReferenceDeployment {
 
   instance bootloaderTrigger: Components.BootloaderTrigger base id 0x1001A000
 
-  instance burnwire: Components.Burnwire base id 0x1001B000
+  instance burnwire: Components.Burnwire base id 0x10089000
 
-  instance gpioBurnwire0: Zephyr.ZephyrGpioDriver base id 0x1001C000
+  instance gpioBurnwire0: Zephyr.ZephyrGpioDriver base id 0x1008A000
 
-  instance gpioBurnwire1: Zephyr.ZephyrGpioDriver base id 0x1001D000
+  instance gpioBurnwire1: Zephyr.ZephyrGpioDriver base id 0x1008B000
+
+  instance gpioHeater: Zephyr.ZephyrGpioDriver base id 0x1008C000
+
+  instance gpio2b: Zephyr.ZephyrGpioDriver base id 0x1008D000
+
+  instance burnwire_deploy2: Components.Burnwire base id 0x1008E000
+
+  instance burnwire_heater: Components.Burnwire base id 0x1008F000
 
   instance downlinkDelay: Components.ComDelay base id 0x1001E000
 
@@ -127,7 +129,7 @@ module ReferenceDeployment {
 
   instance gpioPayloadBatteryLS: Zephyr.ZephyrGpioDriver base id 0x1002A000
 
-  instance cameraHandler: Components.CameraHandler base id 0x1002B000
+  #instance cameraHandler: Components.CameraHandler base id 0x1002B000
 
   instance peripheralUartDriver: Zephyr.ZephyrUartDriver base id 0x1002C000
 
@@ -242,4 +244,30 @@ module ReferenceDeployment {
 
   instance picoTempManager: Drv.PicoTempManager base id 0x10079000
 
+  instance radfetComHandler: Components.radfetComHandler base id 0x10008000
+
+  instance satnogsComHandler: Components.SatnogsComHandler base id 0x10009000
+
+  instance peripheralUartDriver2: Zephyr.ZephyrUartDriver base id 0x1007A000
+
+  instance radioBufferManager: Svc.BufferManager base id 0x1007B000 \
+  {
+    phase Fpp.ToCpp.Phases.configObjects """
+    Svc::BufferManager::BufferBins bins;
+    """
+    phase Fpp.ToCpp.Phases.configComponents """
+    memset(&ConfigObjects::ReferenceDeployment_radioBufferManager::bins, 0, sizeof(ConfigObjects::ReferenceDeployment_radioBufferManager::bins));
+    ConfigObjects::ReferenceDeployment_radioBufferManager::bins.bins[0].bufferSize = 4 * 1024;
+    ConfigObjects::ReferenceDeployment_radioBufferManager::bins.bins[0].numBuffers = 2;
+    ReferenceDeployment::radioBufferManager.setup(
+        2,  // manager ID (1 is used by payloadBufferManager)
+        0,  // store ID
+        ComCcsds::Allocation::memAllocator,
+        ConfigObjects::ReferenceDeployment_radioBufferManager::bins
+    );
+    """
+    phase Fpp.ToCpp.Phases.tearDownComponents """
+    ReferenceDeployment::radioBufferManager.cleanup();
+    """
+  }
 }

@@ -106,13 +106,19 @@ telemetry packets ReferenceDeploymentPackets {
 
   ### Payload Meta Data Packets ###
 
-  packet CameraDebug id 14 group 4 {
-    ReferenceDeployment.cameraHandler.BytesReceived
-    ReferenceDeployment.cameraHandler.ExpectedSize
-    ReferenceDeployment.cameraHandler.IsReceiving
-    ReferenceDeployment.cameraHandler.FileOpen
-    ReferenceDeployment.cameraHandler.FileErrorCount
-    ReferenceDeployment.cameraHandler.ImagesSaved
+  packet radfetComHandler id 14 group 4 {
+    ReferenceDeployment.radfetComHandler.RawCounts
+    ReferenceDeployment.radfetComHandler.SensorStatus
+    ReferenceDeployment.radfetComHandler.ReadingsCount
+    ReferenceDeployment.radfetComHandler.PacketsDownlinked
+  #  ReferenceDeployment.radfetComHandler.FileErrorCount
+  #  ReferenceDeployment.radfetComHandler.ImagesSaved
+  }
+
+  packet satnogsComHandler id 23 group 4 {
+    ReferenceDeployment.satnogsComHandler.LinesReceived
+    ReferenceDeployment.satnogsComHandler.TxUhfCount
+    ReferenceDeployment.satnogsComHandler.LastSectionId
   }
 
   ### Health and Status Packets ###
@@ -121,6 +127,7 @@ telemetry packets ReferenceDeploymentPackets {
     ComCcsdsLora.commsBufferManager.HiBuffs
 #    ComCcsdsSband.comQueue.comQueueDepth
 #    ComCcsdsSband.commsBufferManager.HiBuffs
+    radioBufferManager.NoBuffs
     CdhCore.cmdDisp.CommandsDispatched
     CdhCore.cmdDisp.CommandsDropped
     ReferenceDeployment.rateGroup50Hz.RgMaxTime
@@ -148,6 +155,7 @@ telemetry packets ReferenceDeploymentPackets {
     ComCcsdsLora.comQueue.buffQueueDepth
 #    ComCcsdsSband.comQueue.buffQueueDepth
     payloadBufferManager.HiBuffs
+    radioBufferManager.HiBuffs
     CdhCore.tlmSend.SendLevel
   }
 
@@ -301,6 +309,10 @@ telemetry packets ReferenceDeploymentPackets {
 
   payloadBufferManager.TotalBuffs
   payloadBufferManager.CurrBuffs
+
+  radioBufferManager.EmptyBuffs
+  radioBufferManager.TotalBuffs
+  radioBufferManager.CurrBuffs
 
   CdhCore.version.FrameworkVersion
   CdhCore.version.ProjectVersion

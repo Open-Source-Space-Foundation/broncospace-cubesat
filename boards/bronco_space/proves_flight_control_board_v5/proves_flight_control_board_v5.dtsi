@@ -595,7 +595,7 @@ zephyr_udc0: &usbd {
 
         enable_heater: enable-heater {
 
-            gpios = <&mcp23017 0 GPIO_ACTIVE_HIGH>;  // GPA0
+            gpios = <&mcp23017 2 GPIO_ACTIVE_HIGH>;  // GPA0
             label = "ENABLE_Heater";
         };
 
@@ -607,7 +607,7 @@ zephyr_udc0: &usbd {
 
         fire_deploy2_b: fire-deploy2-b {
 
-            gpios = <&mcp23017 2 GPIO_ACTIVE_HIGH>;  // GPA2
+            gpios = <&mcp23017 0 GPIO_ACTIVE_HIGH>;  // GPA2
             label = "FIRE_DEPLOY2_B";
         };
 
