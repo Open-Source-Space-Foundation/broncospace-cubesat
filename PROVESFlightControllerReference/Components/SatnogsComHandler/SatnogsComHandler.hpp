@@ -37,8 +37,9 @@ class SatnogsComHandler final : public SatnogsComHandlerComponentBase {
     static constexpr U32 LINE_BUFFER_SIZE = 256;
     static constexpr U32 LOG_PREFIX_LEN = 5;  // "LOG: "
 
-    // Section accumulation: hex lines are decoded and gathered here until the
-    // section ends, then written to the section's telemetry channel.
+    // Section accumulation: hex lines are decoded and gathered into the section
+    // buffer, then written to the section's telemetry channel and echoed (as hex,
+    // truncated) to the SectionData event once the section ends.
     enum Section : U8 {
         SECTION_NONE = 0,
         SECTION_POWER = 1,
@@ -50,14 +51,21 @@ class SatnogsComHandler final : public SatnogsComHandlerComponentBase {
         SECTION_BOOTLOADER = 7,
     };
 
+    const char* sectionName(Section s) const;
+    void logSectionData(const U8* data, U32 len);
+
     static constexpr U32 SECTION_BUFFER_SIZE = 128;
     static constexpr U32 SECTION_IDLE_FLUSH_TICKS = 2;  // flush open section after 2s of silence
+
+    // SectionData event's hex string is capped to stay well under
+    // FW_LOG_STRING_MAX_SIZE (200); full data is always in the telemetry channel.
+    static constexpr U32 SECTION_HEX_EVENT_MAX_BYTES = 90;
 
     char m_lineBuf[LINE_BUFFER_SIZE];
     U32  m_lineBufSize;
     U32  m_linesReceived;
     U32  m_txUhfCount;
-    bool m_booted;
+    U32  m_rebootCount;
 
     Section m_section;
     U8      m_sectionBuf[SECTION_BUFFER_SIZE];

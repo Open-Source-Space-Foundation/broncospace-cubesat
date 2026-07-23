@@ -19,14 +19,20 @@ module Components {
         #  Events  #
         #----------#
 
+        @ Fires every time the radio (re)boots, not just the first time -- if this
+        @ repeats rapidly (e.g. a power brownout loop), see RebootCount telemetry
+        @ for the full count once this event throttles.
         event BootMessage(version: string) \
-            severity activity high format "SatNOGS booted: {}"
+            severity activity high format "SatNOGS booted: {}" throttle 5
 
         event TxDetected(len: U32, iface: U32) \
-            severity activity low format "SatNOGS TX UHF: len={} iface={}"
+            severity activity low format "SatNOGS TX UHF: len={} iface={}" throttle 5
 
-        event SectionReceived(section: string) \
-            severity activity low format "SatNOGS telemetry section: {}"
+        @ Raw bytes captured for a completed telemetry section (downlinked live during a
+        @ pass; truncated to fit the event string limit -- full data is in the section's
+        @ telemetry channel). Decode fields on the ground per the SatNOGS ICD XTCE database.
+        event SectionData(section: string, hex: string) \
+            severity activity low format "SatNOGS {} data: {}" throttle 5
 
         event SatnogsLog(msg: string) \
             severity activity low format "SatNOGS: {}"
@@ -37,9 +43,11 @@ module Components {
         event LineTruncated() \
             severity warning low format "SatNOGS line exceeded buffer (truncated)"
 
-        @ Raw telemetry/config data line from the SatNOGS module (downlinked live during a pass)
+        @ Raw telemetry/config data line from the SatNOGS module (downlinked live during a
+        @ pass). Throttled as a backstop against any unanticipated flood of unrecognized
+        @ lines (e.g. a boot loop repeating faster than expected).
         event SatnogsData(msg: string) \
-            severity activity low format "SatNOGS data: {}"
+            severity activity low format "SatNOGS data: {}" throttle 5
 
         #-------------#
         #  Telemetry  #
@@ -47,6 +55,10 @@ module Components {
 
         @ Total LOG lines received from SatNOGS
         telemetry LinesReceived: U32
+
+        @ Number of times the radio's boot message has been seen (i.e. reboot count).
+        @ Stays accurate even after the BootMessage event throttles.
+        telemetry RebootCount: U32
 
         @ Number of TX UHF transmissions detected
         telemetry TxUhfCount: U32

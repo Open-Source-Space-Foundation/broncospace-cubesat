@@ -124,6 +124,7 @@ telemetry packets ReferenceDeploymentPackets {
     ReferenceDeployment.satnogsComHandler.LinesReceived
     ReferenceDeployment.satnogsComHandler.TxUhfCount
     ReferenceDeployment.satnogsComHandler.LastSectionId
+    ReferenceDeployment.satnogsComHandler.RebootCount
   }
 
   packet satnogsRadioConfig id 24 group 4 {

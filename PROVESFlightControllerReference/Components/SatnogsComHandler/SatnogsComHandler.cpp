@@ -31,7 +31,7 @@ SatnogsComHandler::SatnogsComHandler(const char* compName)
       m_lineBufSize(0),
       m_linesReceived(0),
       m_txUhfCount(0),
-      m_booted(false),
+      m_rebootCount(0),
       m_section(SECTION_NONE),
       m_sectionLen(0),
       m_sectionIdleTicks(0) {
@@ -157,15 +157,16 @@ void SatnogsComHandler::processContent(const char* content) {
             m_section = s.section;
             m_sectionIdleTicks = 0;
             this->tlmWrite_LastSectionId(s.id);
-            Fw::LogStringArg sectionArg(s.name);
-            this->log_ACTIVITY_LO_SectionReceived(sectionArg);
             return;
         }
     }
 
-    // Boot message
-    if (!m_booted && strncmp(content, "SatNOGS-COMMS FW:", 17) == 0) {
-        m_booted = true;
+    // Boot message: fires on every boot, not just the first, so a radio that
+    // keeps power-cycling (e.g. brownout when the payload battery turns on) is
+    // correctly counted/reported instead of falling into the SatnogsData catch-all.
+    if (strncmp(content, "SatNOGS-COMMS FW:", 17) == 0) {
+        m_rebootCount++;
+        this->tlmWrite_RebootCount(m_rebootCount);
         Fw::LogStringArg msg(content);
         this->log_ACTIVITY_HI_BootMessage(msg);
         return;
@@ -297,6 +298,8 @@ void SatnogsComHandler::flushSection() {
     }
 
     if (m_sectionLen > 0) {
+        logSectionData(m_sectionBuf, m_sectionLen);
+
         if (m_section == SECTION_FPGA || m_section == SECTION_BOOTLOADER) {
             SatnogsSectionDataSmall small;
             for (U32 i = 0; i < SatnogsSectionDataSmall::SIZE; i++) {
@@ -338,6 +341,40 @@ void SatnogsComHandler::flushSection() {
     m_section = SECTION_NONE;
     m_sectionLen = 0;
     m_sectionIdleTicks = 0;
+}
+
+// ----------------------------------------------------------------------
+// sectionName / logSectionData — echo a completed section's bytes as an
+// event (in addition to the telemetry channel) so values are visible live
+// during a pass, not just on packet request.
+// ----------------------------------------------------------------------
+
+const char* SatnogsComHandler::sectionName(Section s) const {
+    switch (s) {
+        case SECTION_POWER:      return "POWER";
+        case SECTION_RADIO:      return "RADIO";
+        case SECTION_HEALTH:     return "HEALTH";
+        case SECTION_CONFIG:     return "CONFIG";
+        case SECTION_FPGA:       return "FPGA";
+        case SECTION_TIME:       return "TIME";
+        case SECTION_BOOTLOADER: return "BOOTLOADER INFO";
+        default:                 return "";
+    }
+}
+
+void SatnogsComHandler::logSectionData(const U8* data, U32 len) {
+    static const char HEX[] = "0123456789ABCDEF";
+    char hex[(SECTION_HEX_EVENT_MAX_BYTES * 2) + 1];
+    const U32 n = (len < SECTION_HEX_EVENT_MAX_BYTES) ? len : SECTION_HEX_EVENT_MAX_BYTES;
+    for (U32 i = 0; i < n; i++) {
+        hex[i * 2] = HEX[(data[i] >> 4) & 0xF];
+        hex[i * 2 + 1] = HEX[data[i] & 0xF];
+    }
+    hex[n * 2] = '\0';
+
+    Fw::LogStringArg sectionArg(sectionName(m_section));
+    Fw::LogStringArg hexArg(hex);
+    this->log_ACTIVITY_LO_SectionData(sectionArg, hexArg);
 }
 
 // ----------------------------------------------------------------------
