@@ -148,6 +148,7 @@ void setupTopology(const TopologyState& state) {
 
     // UART from the board to the payload
     peripheralUartDriver.configure(state.peripheralUart, state.peripheralBaudRate);
+    // UART from the board to the SatNOGS-COMMS module
     peripheralUartDriver2.configure(state.peripheralUart2, state.peripheralBaudRate2);
     imuManager.configure(state.lis2mdlDevice, state.lsm6dsoDevice);
     ina219SysManager.configure(state.ina219SysDevice);

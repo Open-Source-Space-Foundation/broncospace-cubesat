@@ -111,14 +111,75 @@ telemetry packets ReferenceDeploymentPackets {
     ReferenceDeployment.radfetComHandler.SensorStatus
     ReferenceDeployment.radfetComHandler.ReadingsCount
     ReferenceDeployment.radfetComHandler.PacketsDownlinked
-  #  ReferenceDeployment.radfetComHandler.FileErrorCount
-  #  ReferenceDeployment.radfetComHandler.ImagesSaved
+    ReferenceDeployment.radfetComHandler.LastModuleNum
+    ReferenceDeployment.radfetComHandler.LastRadfetNum
+    ReferenceDeployment.radfetComHandler.LastMilliVolts
+    ReferenceDeployment.radfetComHandler.LastDoseEstimate
+    ReferenceDeployment.radfetComHandler.LastDoseRate
+    ReferenceDeployment.radfetComHandler.LastPacketId
+    ReferenceDeployment.radfetComHandler.LastDownlinkTimestamp
   }
 
   packet satnogsComHandler id 23 group 4 {
     ReferenceDeployment.satnogsComHandler.LinesReceived
     ReferenceDeployment.satnogsComHandler.TxUhfCount
     ReferenceDeployment.satnogsComHandler.LastSectionId
+    ReferenceDeployment.satnogsComHandler.RebootCount
+  }
+
+  packet satnogsRadioConfig id 24 group 4 {
+    ReferenceDeployment.satnogsComHandler.UhfRxFreq
+    ReferenceDeployment.satnogsComHandler.UhfTxFreq
+    ReferenceDeployment.satnogsComHandler.UhfTxGain
+    ReferenceDeployment.satnogsComHandler.UhfGain0Mode
+    ReferenceDeployment.satnogsComHandler.UhfGain1Mode
+    ReferenceDeployment.satnogsComHandler.UhfRxModulation
+    ReferenceDeployment.satnogsComHandler.UhfTxModulation
+    ReferenceDeployment.satnogsComHandler.FskTxBaudrate
+    ReferenceDeployment.satnogsComHandler.FskTxModIdx
+    ReferenceDeployment.satnogsComHandler.FskTxShapingBT
+  }
+
+  packet satnogsPower id 25 group 4 {
+    ReferenceDeployment.satnogsComHandler.PowerData
+  }
+
+  packet satnogsRadio id 26 group 4 {
+    ReferenceDeployment.satnogsComHandler.RadioData
+  }
+
+  packet satnogsHealth id 27 group 4 {
+    ReferenceDeployment.satnogsComHandler.HealthData
+  }
+
+  packet satnogsConfig id 28 group 4 {
+    ReferenceDeployment.satnogsComHandler.ConfigData
+  }
+
+  packet satnogsTime id 29 group 4 {
+    ReferenceDeployment.satnogsComHandler.TimeData
+  }
+
+  packet satnogsFpga id 30 group 4 {
+    ReferenceDeployment.satnogsComHandler.FpgaData
+    ReferenceDeployment.satnogsComHandler.BootloaderData
+  }
+
+  packet satnogsStatus id 31 group 4 {
+    ReferenceDeployment.satnogsComHandler.HealthUptime
+    ReferenceDeployment.satnogsComHandler.HealthBootCount
+    ReferenceDeployment.satnogsComHandler.HealthResetCause
+    ReferenceDeployment.satnogsComHandler.HealthPcbTemp
+    ReferenceDeployment.satnogsComHandler.HealthUhfPaTemp
+    ReferenceDeployment.satnogsComHandler.HealthSbandPaTemp
+    ReferenceDeployment.satnogsComHandler.HealthVinVoltage
+    ReferenceDeployment.satnogsComHandler.HealthVinCurrent
+    ReferenceDeployment.satnogsComHandler.HealthDig3v3Current
+    ReferenceDeployment.satnogsComHandler.HealthRf5vCurrent
+    ReferenceDeployment.satnogsComHandler.HealthEmcPower
+    ReferenceDeployment.satnogsComHandler.HealthPowerEnables
+    ReferenceDeployment.satnogsComHandler.HealthPgood
+    ReferenceDeployment.satnogsComHandler.HealthThermalFlags
   }
 
   ### Health and Status Packets ###
@@ -145,6 +206,7 @@ telemetry packets ReferenceDeploymentPackets {
     #ComCcsdsSband.commsBufferManager.NoBuffs
     ComCcsdsUart.commsBufferManager.NoBuffs
     payloadBufferManager.NoBuffs
+    radioBufferManager.NoBuffs
     ReferenceDeployment.rateGroup50Hz.RgCycleSlips
     ReferenceDeployment.rateGroup10Hz.RgCycleSlips
     ReferenceDeployment.rateGroup1Hz.RgCycleSlips
@@ -301,6 +363,9 @@ telemetry packets ReferenceDeploymentPackets {
 #  ComCcsdsSband.commsBufferManager.EmptyBuffs
   ComCcsdsUart.commsBufferManager.EmptyBuffs
   payloadBufferManager.EmptyBuffs
+  radioBufferManager.EmptyBuffs
+  radioBufferManager.TotalBuffs
+  radioBufferManager.CurrBuffs
 
   ComCcsdsLora.commsBufferManager.TotalBuffs
   ComCcsdsLora.commsBufferManager.CurrBuffs

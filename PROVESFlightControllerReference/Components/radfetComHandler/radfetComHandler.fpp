@@ -65,6 +65,15 @@ module Components {
         event DownlinkTimeout(received: U32, expected: U32) \
             severity warning high format "Downlink timed out: received {} of {} expected packets"
 
+        event FullReadingReceived(
+            moduleNum: U8,
+            radfetNum: U8,
+            rawCounts: U32,
+            adcMilliVolts: U32,
+            doseEstimate: U32,
+            doseRate: U32
+        ) severity activity low format "Module {} RADFET {}: {} counts, {} mV, dose {}, rate {}"
+
         #-------------#
         #  telemetry  #
         #-------------#
@@ -73,6 +82,14 @@ module Components {
         telemetry SensorStatus: U8
         telemetry ReadingsCount: U32
         telemetry PacketsDownlinked: U32
+
+        telemetry LastModuleNum: U8
+        telemetry LastRadfetNum: U8
+        telemetry LastMilliVolts: U32
+        telemetry LastDoseEstimate: U32
+        telemetry LastDoseRate: U32
+        telemetry LastPacketId: U32
+        telemetry LastDownlinkTimestamp: U32
 
         #-------------#
         #    Ports    #

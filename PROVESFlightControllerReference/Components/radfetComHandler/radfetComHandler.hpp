@@ -7,7 +7,6 @@
 #ifndef Components_radfetComHandler_HPP
 #define Components_radfetComHandler_HPP
 
-#include <Os/File.hpp>
 #include <string>
 
 #include "PROVESFlightControllerReference/Components/radfetComHandler/radfetComHandlerComponentAc.hpp"
@@ -80,24 +79,24 @@ class radfetComHandler final : public radfetComHandlerComponentBase {
                                  U32 cmdSeq,           //!< The command sequence number
                                  const Fw::CmdStringArg& cmd) override;
 
-    void DOWNLINK_REQUEST_cmdHandler(FwOpcodeType opCode, 
-                                     U32 cmdSeq,
-                                     U32 numPackets
-                                    ) override;
-
-
-
+    void DOWNLINK_REQUEST_cmdHandler(FwOpcodeType opCode, U32 cmdSeq, U32 numPackets) override;
 
     void processSensorData();
     bool accumulateSensorData(const U8* data, U32 size);
     void clearDataBuffer();
-    bool parseRadiationData(const U8* data, U32 size, U32& rawCounts);
+    bool parseRadiationData(const U8* data,
+                            U32 size,
+                            U8& moduleNum,
+                            U8& radfetNum,
+                            U32& rawCounts,
+                            U32& adcMilliVolts,
+                            U32& doseEstimate,
+                            U32& doseRate);
     bool validateRawData(U32 rawCounts);
     void takeRadiationReading();
     void sendSensorCommand(const char* command);
     // U32 calculateChecksum(void* data, U32 size);
     void removeProcessedData(U32 size);
-
 
     bool parseDownlinkPacket(const U8* data, U32 size);
 
@@ -111,40 +110,32 @@ class radfetComHandler final : public radfetComHandlerComponentBase {
     U32 m_downlinkExpected;
     U32 m_downlinkReceived;
     U32 m_downlinkTimeoutTicks;
+    U32 m_dataBufferSize;
+
+    // members for last reading received
+    U8 m_lastModuleNum;
+    U8 m_lastRadfetNum;
+    U32 m_lastMilliVolts;
+    U32 m_lastDoseEstimate;
+    U32 m_lastDoseRate;
+    U32 m_lastPacketId;
+    U32 m_lastDownlinkTimestamp;
 
     static constexpr U32 DATA_BUFFER_SIZE = 512;
     U8 m_dataBuffer[DATA_BUFFER_SIZE];
-    U32 m_dataBufferSize;
 
     static constexpr U8 RESPONSE_START_MARKER = 0xAA;
-    static constexpr U32 RESPONSE_SIZE = 6;
+    static constexpr U32 RESPONSE_SIZE = 18;
 
     static constexpr U8 DOWNLINK_START_MARKER = 0xBB;
     static constexpr U8 DOWNLINK_END_MARKER = 0xEE;
 
-    static constexpr U32 DOWNLINK_TIMEOUT_TICKS = 30;  // 30s at 1Hz
+    static constexpr U32 DOWNLINK_TIMEOUT_TICKS = 20;  // 30s at 1Hz
 
-    struct RadfetReading {
-        U8 moduleNum;
-        U8 radfetNum;
-        U16 adcValue;
-        U32 timestamp;
-    };
-
-    static constexpr U8 READINGS_PER_PACKET = 20;
-
-    struct RadfetPacket {
-        U32 packetId;
-        U32 timestampStart;
-        U32 timestampEnd;
-        U8 sampleCount;
-        RadfetReading readings[READINGS_PER_PACKET];
-        U32 checksum;
-    };
-
-    static_assert(sizeof(RadfetReading) == 8, "RadfetReading size mismatch");
-    static_assert(sizeof(RadfetPacket) == 180, "RadfetPacket size mismatch");
-
+    // Maximum records accepted from a single downlink packet. The wire
+    // format is parsed byte-by-byte in parseDownlinkPacket (24-byte records);
+    // there is no in-memory packet struct.
+    static constexpr U8 READINGS_PER_PACKET = 8;
 };
 
 }  // namespace Components
