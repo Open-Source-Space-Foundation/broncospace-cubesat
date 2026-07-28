@@ -293,7 +293,6 @@ module ReferenceDeployment {
       rateGroup1Hz.RateGroupMemberOut[18] -> burnwire_heater.schedIn
       rateGroup1Hz.RateGroupMemberOut[19] -> adcs.run
       rateGroup1Hz.RateGroupMemberOut[21] -> thermalManager.run
-      rateGroup1Hz.RateGroupMemberOut[22] -> ComCcsdsLora.authenticationRouter.run
 
     }
 
