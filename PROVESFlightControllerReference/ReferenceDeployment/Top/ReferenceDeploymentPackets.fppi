@@ -131,13 +131,6 @@ telemetry packets ReferenceDeploymentPackets {
     satnogsComHandler.UhfRxFreq
     satnogsComHandler.UhfTxFreq
     satnogsComHandler.UhfTxGain
-    satnogsComHandler.UhfGain0Mode
-    satnogsComHandler.UhfGain1Mode
-    satnogsComHandler.UhfRxModulation
-    satnogsComHandler.UhfTxModulation
-    satnogsComHandler.FskTxBaudrate
-    satnogsComHandler.FskTxModIdx
-    satnogsComHandler.FskTxShapingBT
   }
 
   packet satnogsPower id 25 group 4 {
@@ -152,34 +145,14 @@ telemetry packets ReferenceDeploymentPackets {
     satnogsComHandler.HealthData
   }
 
-  packet satnogsConfig id 28 group 4 {
-    satnogsComHandler.ConfigData
-  }
-
-  packet satnogsTime id 29 group 4 {
+  packet satnogsTime id 28 group 4 {
     satnogsComHandler.TimeData
   }
 
-  packet satnogsFpga id 30 group 4 {
-    satnogsComHandler.FpgaData
-    satnogsComHandler.BootloaderData
-  }
-
-  packet satnogsStatus id 31 group 4 {
+  packet satnogsStatus id 29 group 4 {
     satnogsComHandler.HealthUptime
     satnogsComHandler.HealthBootCount
     satnogsComHandler.HealthResetCause
-    satnogsComHandler.HealthPcbTemp
-    satnogsComHandler.HealthUhfPaTemp
-    satnogsComHandler.HealthSbandPaTemp
-    satnogsComHandler.HealthVinVoltage
-    satnogsComHandler.HealthVinCurrent
-    satnogsComHandler.HealthDig3v3Current
-    satnogsComHandler.HealthRf5vCurrent
-    satnogsComHandler.HealthEmcPower
-    satnogsComHandler.HealthPowerEnables
-    satnogsComHandler.HealthPgood
-    satnogsComHandler.HealthThermalFlags
   }
 
   ### Health and Status Packets ###
@@ -188,7 +161,6 @@ telemetry packets ReferenceDeploymentPackets {
     ComCcsdsLora.commsBufferManager.HiBuffs
 #    ComCcsdsSband.comQueue.comQueueDepth
 #    ComCcsdsSband.commsBufferManager.HiBuffs
-    radioBufferManager.NoBuffs
     CdhCore.cmdDisp.CommandsDispatched
     CdhCore.cmdDisp.CommandsDropped
     rateGroup50Hz.RgMaxTime
@@ -376,8 +348,30 @@ telemetry packets ReferenceDeploymentPackets {
 #  ComCcsdsSband.commsBufferManager.TotalBuffs
 #  ComCcsdsSband.commsBufferManager.CurrBuffs
 
+#  Payload Telem
   payloadBufferManager.TotalBuffs
   payloadBufferManager.CurrBuffs
+  satnogsComHandler.UhfGain0Mode
+  satnogsComHandler.UhfGain1Mode
+  satnogsComHandler.UhfRxModulation
+  satnogsComHandler.UhfTxModulation
+  satnogsComHandler.FskTxBaudrate
+  satnogsComHandler.FskTxModIdx
+  satnogsComHandler.FskTxShapingBT
+  satnogsComHandler.HealthPcbTemp
+  satnogsComHandler.HealthUhfPaTemp
+  satnogsComHandler.HealthSbandPaTemp
+  satnogsComHandler.HealthVinVoltage
+  satnogsComHandler.HealthVinCurrent
+  satnogsComHandler.HealthDig3v3Current
+  satnogsComHandler.HealthRf5vCurrent
+  satnogsComHandler.HealthEmcPower
+  satnogsComHandler.HealthPowerEnables
+  satnogsComHandler.HealthPgood
+  satnogsComHandler.HealthThermalFlags
+  satnogsComHandler.FpgaData
+  satnogsComHandler.BootloaderData
+  satnogsComHandler.ConfigData
 
   CdhCore.tlmSend.GroupConfigs
   CdhCore.version.FrameworkVersion

@@ -35,8 +35,6 @@ module ReferenceDeployment {
     instance gpioWatchdog
     instance gpioBurnwire0
     instance gpioBurnwire1
-    instance gpioBurnwireHeater
-    instance gpio2b
     instance gpioface0LS
     instance gpioface1LS
     instance gpioface2LS
@@ -54,8 +52,6 @@ module ReferenceDeployment {
     instance downlinkDelay
     instance telemetryDelay
     instance burnwire
-    instance burnwire_heater
-    instance burnwire_deploy2
     instance antennaDeployer
     instance comSplitterEvents
     instance comSplitterTelemetry
@@ -307,10 +303,8 @@ module ReferenceDeployment {
       rateGroup1Hz.RateGroupMemberOut[14] -> startupManager.run
       rateGroup1Hz.RateGroupMemberOut[15] -> powerMonitor.run
       rateGroup1Hz.RateGroupMemberOut[16] -> modeManager.run
-      rateGroup1Hz.RateGroupMemberOut[17] -> burnwire_deploy2.schedIn
-      rateGroup1Hz.RateGroupMemberOut[18] -> burnwire_heater.schedIn
-      rateGroup1Hz.RateGroupMemberOut[19] -> adcs.run
-      rateGroup1Hz.RateGroupMemberOut[21] -> thermalManager.run
+      rateGroup1Hz.RateGroupMemberOut[17] -> adcs.run
+      rateGroup1Hz.RateGroupMemberOut[18] -> thermalManager.run
 
     }
 
@@ -365,16 +359,6 @@ module ReferenceDeployment {
       burnwire.gpioSet[1] -> gpioBurnwire1.gpioWrite
     }
 
-    connections BurnwireDeploy2Gpio {
-      burnwire_deploy2.gpioSet[0] -> gpioBurnwire0.gpioWrite
-      burnwire_deploy2.gpioSet[1] -> gpio2b.gpioWrite
-    }
-
-    connections BurnwireHeaterGpio {
-      burnwire_heater.gpioSet[0] -> gpioBurnwire0.gpioWrite
-      burnwire_heater.gpioSet[1] -> gpioBurnwireHeater.gpioWrite
-    }
-
     connections AntennaDeployment {
       antennaDeployer.burnStart -> burnwire.burnStart
       antennaDeployer.burnStop -> burnwire.burnStop
@@ -402,31 +386,31 @@ module ReferenceDeployment {
     }
 
     connections PayloadCom {
-        # radfetComHandler <-> UART Driver
-        peripheralUartDriver.$recv        -> radfetComHandler.dataIn
-        radfetComHandler.commandOut       -> peripheralUartDriver.$send
-        radfetComHandler.bufferReturn     -> peripheralUartDriver.recvReturnIn
+      # radfetComHandler <-> UART Driver
+      peripheralUartDriver.$recv        -> radfetComHandler.dataIn
+      radfetComHandler.commandOut       -> peripheralUartDriver.$send
+      radfetComHandler.bufferReturn     -> peripheralUartDriver.recvReturnIn
 
-        # UART driver buffer management
-        peripheralUartDriver.allocate     -> payloadBufferManager.bufferGetCallee
-        peripheralUartDriver.deallocate   -> payloadBufferManager.bufferSendIn
+      # UART driver buffer management
+      peripheralUartDriver.allocate     -> payloadBufferManager.bufferGetCallee
+      peripheralUartDriver.deallocate   -> payloadBufferManager.bufferSendIn
 
-        # schedIn for periodic readings
-        rateGroup1Hz.RateGroupMemberOut[20] -> radfetComHandler.schedIn
+      # schedIn for periodic readings
+      rateGroup1Hz.RateGroupMemberOut[20] -> radfetComHandler.schedIn
     }
 
     connections RadioCom {
-        # satnogsComHandler <-> UART1 Driver
-        peripheralUartDriver2.$recv       -> satnogsComHandler.dataIn
-        satnogsComHandler.commandOut      -> peripheralUartDriver2.$send
-        satnogsComHandler.bufferReturn    -> peripheralUartDriver2.recvReturnIn
+      # satnogsComHandler <-> UART1 Driver
+      peripheralUartDriver2.$recv       -> satnogsComHandler.dataIn
+      satnogsComHandler.commandOut      -> peripheralUartDriver2.$send
+      satnogsComHandler.bufferReturn    -> peripheralUartDriver2.recvReturnIn
 
-        # UART1 driver buffer management
-        peripheralUartDriver2.allocate    -> radioBufferManager.bufferGetCallee
-        peripheralUartDriver2.deallocate  -> radioBufferManager.bufferSendIn
+      # UART1 driver buffer management
+      peripheralUartDriver2.allocate    -> radioBufferManager.bufferGetCallee
+      peripheralUartDriver2.deallocate  -> radioBufferManager.bufferSendIn
 
-        # schedIn for periodic readings
-        rateGroup1Hz.RateGroupMemberOut[23] -> satnogsComHandler.schedIn
+      # schedIn for health monitoring
+      rateGroup1Hz.RateGroupMemberOut[23] -> satnogsComHandler.schedIn
     }
 
     #connections MyConnectionGraph {
