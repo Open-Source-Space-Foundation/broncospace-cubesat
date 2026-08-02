@@ -95,7 +95,7 @@ module ReferenceDeployment {
 
   instance gpioBurnwire1: Zephyr.ZephyrGpioDriver base id 0x1008B000
 
-  instance gpioHeater: Zephyr.ZephyrGpioDriver base id 0x1008C000
+  instance gpioBurnwireHeater: Zephyr.ZephyrGpioDriver base id 0x1008C000
 
   instance gpio2b: Zephyr.ZephyrGpioDriver base id 0x1008D000
 

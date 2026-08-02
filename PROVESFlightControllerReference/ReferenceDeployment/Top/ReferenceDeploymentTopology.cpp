@@ -79,7 +79,7 @@ void configureTopology() {
     gpioWatchdog.open(ledGpio, Zephyr::ZephyrGpioDriver::GpioConfiguration::OUT);
     gpioBurnwire0.open(burnwire0Gpio, Zephyr::ZephyrGpioDriver::GpioConfiguration::OUT);
     gpioBurnwire1.open(burnwire1Gpio, Zephyr::ZephyrGpioDriver::GpioConfiguration::OUT);
-    gpioHeater.open(heaterGpio, Zephyr::ZephyrGpioDriver::GpioConfiguration::OUT);
+    gpioBurnwireHeater.open(heaterGpio, Zephyr::ZephyrGpioDriver::GpioConfiguration::OUT);
     gpio2b.open(deploy2bGpio, Zephyr::ZephyrGpioDriver::GpioConfiguration::OUT);
 
     cmdSeq.allocateBuffer(0, mallocator, 1024);

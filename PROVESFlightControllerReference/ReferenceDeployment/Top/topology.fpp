@@ -35,7 +35,7 @@ module ReferenceDeployment {
     instance gpioWatchdog
     instance gpioBurnwire0
     instance gpioBurnwire1
-    instance gpioHeater
+    instance gpioBurnwireHeater
     instance gpio2b
     instance gpioface0LS
     instance gpioface1LS
@@ -372,7 +372,7 @@ module ReferenceDeployment {
 
     connections BurnwireHeaterGpio {
       burnwire_heater.gpioSet[0] -> gpioBurnwire0.gpioWrite
-      burnwire_heater.gpioSet[1] -> gpioHeater.gpioWrite
+      burnwire_heater.gpioSet[1] -> gpioBurnwireHeater.gpioWrite
     }
 
     connections AntennaDeployment {
