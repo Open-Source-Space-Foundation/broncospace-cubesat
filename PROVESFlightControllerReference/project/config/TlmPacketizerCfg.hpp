@@ -27,17 +27,12 @@ static const FwChanIdType TLMPACKETIZER_HASH_MOD_VALUE =
 static const FwChanIdType TLMPACKETIZER_HASH_BUCKETS =
     260;  // !< Buckets assignable to a hash slot.
           // Buckets must be >= number of telemetry channels in system
+
+static const FwChanIdType MAX_PACKETIZER_CHANNELS =
+    202;  // !< Must be >= number of non-omitted telemetry channels in system
+
 static const FwChanIdType TLMPACKETIZER_MAX_MISSING_TLM_CHECK =
     25;  // !< Maximum number of missing telemetry channel checks
-
-// packet update mode
-enum PacketUpdateMode {
-    PACKET_UPDATE_ALWAYS,              // Always send packets, even if no changes to channel data
-    PACKET_UPDATE_ON_CHANGE,           // Only send packets if any of the channels updates
-    PACKET_UPDATE_AFTER_FIRST_CHANGE,  // Always send packets, but only after first channel has been updated
-};
-
-static const PacketUpdateMode PACKET_UPDATE_MODE = PACKET_UPDATE_ON_CHANGE;
 }  // namespace Svc
 
 #endif /* SVC_TLMPACKETIZER_TLMPACKETIZERCOMPONENTIMPLCFG_HPP_ */
