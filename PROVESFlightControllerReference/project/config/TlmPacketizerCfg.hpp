@@ -16,7 +16,7 @@
 #include <Fw/FPrimeBasicTypes.hpp>
 
 namespace Svc {
-static const FwChanIdType MAX_PACKETIZER_PACKETS = 22;
+static const FwChanIdType MAX_PACKETIZER_PACKETS = 32;
 
 static const FwChanIdType MAX_PACKETIZER_CHANNELS =
     202;  // !< Must be >= number of non-omitted telemetry channels in system

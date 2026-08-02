@@ -74,10 +74,12 @@ module ReferenceDeployment {
     instance payloadBatteryLoadSwitch
     instance fsFormat
     instance fsSpace
-    instance payload
-    instance cameraHandler
+    instance radfetComHandler
+    instance satnogsComHandler
     instance peripheralUartDriver
+    instance peripheralUartDriver2
     instance payloadBufferManager
+    instance radioBufferManager
     instance cmdSeq
     instance payloadSeq
     instance safeModeSeq
@@ -272,6 +274,7 @@ module ReferenceDeployment {
       rateGroup10Hz.RateGroupMemberOut[2] -> ComCcsdsLora.aggregator.timeout
       #rateGroup10Hz.RateGroupMemberOut[3] -> ComCcsdsSband.aggregator.timeout
       rateGroup10Hz.RateGroupMemberOut[4] -> peripheralUartDriver.schedIn
+      rateGroup10Hz.RateGroupMemberOut[5] -> peripheralUartDriver2.schedIn
       rateGroup10Hz.RateGroupMemberOut[6] -> FileHandling.fileManager.schedIn
       rateGroup10Hz.RateGroupMemberOut[7] -> cmdSeq.schedIn
       rateGroup10Hz.RateGroupMemberOut[8] -> payloadSeq.schedIn
@@ -295,6 +298,7 @@ module ReferenceDeployment {
       rateGroup1Hz.RateGroupMemberOut[9] -> antennaDeployer.schedIn
       rateGroup1Hz.RateGroupMemberOut[10] -> fsSpace.run
       rateGroup1Hz.RateGroupMemberOut[11] -> payloadBufferManager.schedIn
+      rateGroup1Hz.RateGroupMemberOut[24] -> radioBufferManager.schedIn
       rateGroup1Hz.RateGroupMemberOut[13] -> FileHandling.fileDownlink.Run
       rateGroup1Hz.RateGroupMemberOut[14] -> startupManager.run
       rateGroup1Hz.RateGroupMemberOut[15] -> powerMonitor.run
@@ -382,20 +386,31 @@ module ReferenceDeployment {
     }
 
     connections PayloadCom {
-      # PayloadCom <-> UART Driver
-      payload.uartForward -> peripheralUartDriver.$send
-      peripheralUartDriver.$recv -> payload.uartDataIn
+      # radfetComHandler <-> UART Driver
+      peripheralUartDriver.$recv        -> radfetComHandler.dataIn
+      radfetComHandler.commandOut       -> peripheralUartDriver.$send
+      radfetComHandler.bufferReturn     -> peripheralUartDriver.recvReturnIn
 
-      # Buffer return path (critical! - matches ComStub pattern)
-      payload.bufferReturn -> peripheralUartDriver.recvReturnIn
+      # UART driver buffer management
+      peripheralUartDriver.allocate     -> payloadBufferManager.bufferGetCallee
+      peripheralUartDriver.deallocate   -> payloadBufferManager.bufferSendIn
 
-      # PayloadCom <-> CameraHandler data flow
-      payload.uartDataOut -> cameraHandler.dataIn
-      cameraHandler.commandOut -> payload.commandIn
+      # schedIn for periodic readings
+      rateGroup1Hz.RateGroupMemberOut[20] -> radfetComHandler.schedIn
+    }
 
-      # UART driver allocates/deallocates from BufferManager
-      peripheralUartDriver.allocate -> payloadBufferManager.bufferGetCallee
-      peripheralUartDriver.deallocate -> payloadBufferManager.bufferSendIn
+    connections RadioCom {
+      # satnogsComHandler <-> UART1 Driver
+      peripheralUartDriver2.$recv       -> satnogsComHandler.dataIn
+      satnogsComHandler.commandOut      -> peripheralUartDriver2.$send
+      satnogsComHandler.bufferReturn    -> peripheralUartDriver2.recvReturnIn
+
+      # UART1 driver buffer management
+      peripheralUartDriver2.allocate    -> radioBufferManager.bufferGetCallee
+      peripheralUartDriver2.deallocate  -> radioBufferManager.bufferSendIn
+
+      # schedIn for health monitoring
+      rateGroup1Hz.RateGroupMemberOut[23] -> satnogsComHandler.schedIn
     }
 
     #connections MyConnectionGraph {
