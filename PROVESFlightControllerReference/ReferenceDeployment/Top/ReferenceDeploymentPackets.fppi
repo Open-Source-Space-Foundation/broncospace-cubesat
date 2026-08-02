@@ -188,6 +188,7 @@ telemetry packets ReferenceDeploymentPackets {
     ComCcsdsLora.commsBufferManager.HiBuffs
 #    ComCcsdsSband.comQueue.comQueueDepth
 #    ComCcsdsSband.commsBufferManager.HiBuffs
+    radioBufferManager.NoBuffs
     CdhCore.cmdDisp.CommandsDispatched
     CdhCore.cmdDisp.CommandsDropped
     rateGroup50Hz.RgMaxTime
