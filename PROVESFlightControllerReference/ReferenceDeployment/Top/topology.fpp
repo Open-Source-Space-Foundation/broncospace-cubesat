@@ -499,23 +499,23 @@ module ReferenceDeployment {
       # Load switch control connections
       # The load switch index mapping below is non-sequential because it matches the physical board layout and wiring order.
       # This ordering ensures that software indices correspond to the hardware arrangement for easier maintenance and debugging.
-      # face4 = index 0, face0 = index 1, face1 = index 2, face2 = index 3
-      # face3 = index 4, face5 = index 5, payloadPower = index 6, payloadBattery = index 7
+      # face0 = index 0, face1 = index 1, face2 = index 2, face3 = index 3
+      # face4 = index 4, face5 = index 5, payloadPower = index 6, payloadBattery = index 7
       # TODO(ALLTEAMS): Configure the faces you want to automatically turn on
-      # modeManager.loadSwitchTurnOn[0] -> face4LoadSwitch.turnOn
-      # modeManager.loadSwitchTurnOn[1] -> face0LoadSwitch.turnOn
-      # modeManager.loadSwitchTurnOn[2] -> face1LoadSwitch.turnOn
-      # modeManager.loadSwitchTurnOn[3] -> face2LoadSwitch.turnOn
-      # modeManager.loadSwitchTurnOn[4] -> face3LoadSwitch.turnOn
-      # modeManager.loadSwitchTurnOn[5] -> face5LoadSwitch.turnOn
+      modeManager.loadSwitchTurnOn[0] -> face0LoadSwitch.turnOn
+      modeManager.loadSwitchTurnOn[1] -> face1LoadSwitch.turnOn
+      modeManager.loadSwitchTurnOn[2] -> face2LoadSwitch.turnOn
+      modeManager.loadSwitchTurnOn[3] -> face3LoadSwitch.turnOn
+      modeManager.loadSwitchTurnOn[4] -> face4LoadSwitch.turnOn
+      modeManager.loadSwitchTurnOn[5] -> face5LoadSwitch.turnOn
       # modeManager.loadSwitchTurnOn[6] -> payloadPowerLoadSwitch.turnOn
       # modeManager.loadSwitchTurnOn[7] -> payloadBatteryLoadSwitch.turnOn
 
-      modeManager.loadSwitchTurnOff[0] -> face4LoadSwitch.turnOff
-      modeManager.loadSwitchTurnOff[1] -> face0LoadSwitch.turnOff
-      modeManager.loadSwitchTurnOff[2] -> face1LoadSwitch.turnOff
-      modeManager.loadSwitchTurnOff[3] -> face2LoadSwitch.turnOff
-      modeManager.loadSwitchTurnOff[4] -> face3LoadSwitch.turnOff
+      modeManager.loadSwitchTurnOff[0] -> face0LoadSwitch.turnOff
+      modeManager.loadSwitchTurnOff[1] -> face1LoadSwitch.turnOff
+      modeManager.loadSwitchTurnOff[2] -> face2LoadSwitch.turnOff
+      modeManager.loadSwitchTurnOff[3] -> face3LoadSwitch.turnOff
+      modeManager.loadSwitchTurnOff[4] -> face4LoadSwitch.turnOff
       modeManager.loadSwitchTurnOff[5] -> face5LoadSwitch.turnOff
       modeManager.loadSwitchTurnOff[6] -> payloadPowerLoadSwitch.turnOff
       modeManager.loadSwitchTurnOff[7] -> payloadBatteryLoadSwitch.turnOff
