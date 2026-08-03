@@ -85,3 +85,11 @@
 		/delete-node/ rf2-io3;
 	};
 };
+
+/*
+ * v5e disables the RV3028 automatic backup switchover; the RTC runs from VDD
+ * only, so no VBACKUP supply is used.
+ */
+&rtc0 {
+	backup-switch-mode = "disabled";
+};
