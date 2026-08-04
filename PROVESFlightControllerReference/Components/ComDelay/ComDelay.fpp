@@ -1,5 +1,5 @@
 module Components {
-    constant DEFAULT_DIVIDER = 299 # On a 1Hz input, outputs every 30s
+    constant DEFAULT_DIVIDER = 316 # On a 1Hz input, outputs every 30s
     @ A component to delay com status until some further point
     passive component ComDelay {
         @ Rate schedule port used to trigger radio transmission
