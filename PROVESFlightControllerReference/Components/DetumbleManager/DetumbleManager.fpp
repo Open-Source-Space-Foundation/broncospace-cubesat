@@ -79,30 +79,30 @@ module Components {
 
         # --- X+ Coil ---
         param X_PLUS_VOLTAGE: F64 default 3.3 id 9 # In Volts
-        param X_PLUS_RESISTANCE: F64 default 17.75 id 10 # 1U Calculated Resistance in Ohms
-        param X_PLUS_LENGTH: F64 default 0.053 id 12 # 1U Length in meters
-        param X_PLUS_WIDTH: F64 default 0.045 id 13 # 1U Width in meters
+        param X_PLUS_RESISTANCE: F64 default 39.5 id 10 # 2U Calculated Resistance in Ohms
+        param X_PLUS_LENGTH: F64 default 0.164 id 12 # 2U Length in meters
+        param X_PLUS_WIDTH: F64 default 0.053 id 13 # 2U Width in meters
         param X_PLUS_SHAPE: CoilShape default CoilShape.RECTANGULAR id 33
 
         # --- X- Coil ---
         param X_MINUS_VOLTAGE: F64 default 3.3 id 14 # In Volts
-        param X_MINUS_RESISTANCE: F64 default 17.75 id 15 # 1U Calculated Resistance in Ohms
-        param X_MINUS_LENGTH: F64 default 0.053 id 17 # 1U Length in meters
-        param X_MINUS_WIDTH: F64 default 0.045 id 18 # 1U Width in meters
+        param X_MINUS_RESISTANCE: F64 default 39.5 id 15 # 2U Calculated Resistance in Ohms
+        param X_MINUS_LENGTH: F64 default 0.164 id 17 # 2U Length in meters
+        param X_MINUS_WIDTH: F64 default 0.053 id 18 # 2U Width in meters
         param X_MINUS_SHAPE: CoilShape default CoilShape.RECTANGULAR id 34
 
         # --- Y+ Coil ---
         param Y_PLUS_VOLTAGE: F64 default 3.3 id 19 # In Volts
-        param Y_PLUS_RESISTANCE: F64 default 39.5 id 20 # 2U Calculated Resistance in Ohms
-        param Y_PLUS_LENGTH: F64 default 0.164 id 22 # 2U Length in meters
-        param Y_PLUS_WIDTH: F64 default 0.053 id 23 # 2U Width in meters
+        param Y_PLUS_RESISTANCE: F64 default 17.75 id 20 # 1U Calculated Resistance in Ohms
+        param Y_PLUS_LENGTH: F64 default 0.053 id 22 # 1U Length in meters
+        param Y_PLUS_WIDTH: F64 default 0.045 id 23 # 1U Width in meters
         param Y_PLUS_SHAPE: CoilShape default CoilShape.RECTANGULAR id 35
 
         # --- Y- Coil ---
         param Y_MINUS_VOLTAGE: F64 default 3.3 id 24 # In Volts
-        param Y_MINUS_RESISTANCE: F64 default 39.5 id 25 # 2U Calculated Resistance in Ohms
-        param Y_MINUS_LENGTH: F64 default 0.164 id 27 # 2U Length in meters
-        param Y_MINUS_WIDTH: F64 default 0.053 id 28 # 2U Width in meters
+        param Y_MINUS_RESISTANCE: F64 default 17.75 id 25 # 1U Calculated Resistance in Ohms
+        param Y_MINUS_LENGTH: F64 default 0.053 id 27 # 1U Length in meters
+        param Y_MINUS_WIDTH: F64 default 0.045 id 28 # 1U Width in meters
         param Y_MINUS_SHAPE: CoilShape default CoilShape.RECTANGULAR id 36
 
         # --- Z- Coil ---
