@@ -369,15 +369,15 @@ module ReferenceDeployment {
       detumbleManager.angularVelocityMagnitudeGet -> imuManager.angularVelocityMagnitudeGet
       detumbleManager.magneticFieldSamplingPeriodGet -> imuManager.magneticFieldSamplingPeriodGet
 
-      detumbleManager.xPlusStart -> drv2605Face0Manager.start
-      detumbleManager.xMinusStart -> drv2605Face1Manager.start
-      detumbleManager.yPlusStart -> drv2605Face5Manager.start
-      detumbleManager.yMinusStart -> drv2605Face2Manager.start
+      detumbleManager.xPlusStart -> drv2605Face5Manager.start
+      detumbleManager.xMinusStart -> drv2605Face2Manager.start
+      detumbleManager.yPlusStart -> drv2605Face1Manager.start
+      detumbleManager.yMinusStart -> drv2605Face0Manager.start
 
-      detumbleManager.xPlusStop -> drv2605Face0Manager.stop
-      detumbleManager.xMinusStop -> drv2605Face1Manager.stop
-      detumbleManager.yPlusStop -> drv2605Face5Manager.stop
-      detumbleManager.yMinusStop -> drv2605Face2Manager.stop
+      detumbleManager.xPlusStop -> drv2605Face5Manager.stop
+      detumbleManager.xMinusStop -> drv2605Face2Manager.stop
+      detumbleManager.yPlusStop -> drv2605Face1Manager.stop
+      detumbleManager.yMinusStop -> drv2605Face0Manager.stop
 
       detumbleManager.getSystemMode -> modeManager.getMode
       modeManager.modeChanged -> detumbleManager.systemModeChanged
